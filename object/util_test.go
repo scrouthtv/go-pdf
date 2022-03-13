@@ -33,27 +33,27 @@ func (s *StringPDF) PeekRune() (rune, error) {
 	return read, nil
 }
 
-func (s *StringPDF) PeekString(len int) (string, error) {
-	buf := make([]byte, len)
+func (s *StringPDF) PeekString(length int) (string, error) {
+	buf := make([]byte, length)
 	_, err := s.Read(buf)
 	if err != nil {
 		return "", err
 	}
 
 	// unread string:
-	for len > 0 {
+	for length > 0 {
 		err = s.UnreadByte()
 		if err != nil {
 			return "", err
 		}
-		len--
+		length--
 	}
 
 	return string(buf), nil
 }
 
-func (s *StringPDF) ReadString(len int) (string, error) {
-	buf := make([]byte, len)
+func (s *StringPDF) ReadString(length int) (string, error) {
+	buf := make([]byte, length)
 
 	_, err := s.Read(buf)
 	if err != nil {

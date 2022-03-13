@@ -19,7 +19,7 @@ func ReadNull(r file.Reader) (Null, error) {
 	if a == "null" {
 		return TheNull, nil
 	} else {
-		return TheNull, &ErrBadNull{r.Position(), a}
+		return TheNull, &BadNullError{r.Position(), a}
 	}
 	// fixed length representation,
 	// no need to unread anything
@@ -34,11 +34,11 @@ func (n Null) String() string {
 	return "null"
 }
 
-type ErrBadNull struct {
+type BadNullError struct {
 	Position int
 	Text     string
 }
 
-func (e *ErrBadNull) Error() string {
+func (e *BadNullError) Error() string {
 	return fmt.Sprintf("expected null, got \"%s\" at %d", e.Text, e.Position)
 }

@@ -68,7 +68,7 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 	}
 
 	if read != ' ' {
-		return nil, &ErrRunawayIndirectMember{r.Position()}
+		return nil, &RunawayIndirectMemberError{r.Position()}
 	}
 
 	i.ID.Gen, err = ReadInteger(r)
@@ -77,7 +77,7 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 	}
 
 	if read != ' ' {
-		return nil, &ErrRunawayIndirectMember{r.Position()}
+		return nil, &RunawayIndirectMemberError{r.Position()}
 	}
 
 	// FIXME this can also be an indirect object
@@ -124,10 +124,10 @@ func (i *Indirect) String() string {
 	panic("not impl")
 }
 
-type ErrRunawayIndirectMember struct {
+type RunawayIndirectMemberError struct {
 	Position int
 }
 
-func (e *ErrRunawayIndirectMember) Error() string {
+func (e *RunawayIndirectMemberError) Error() string {
 	return fmt.Sprintf("runaway indirect member, excepted space at %d", e.Position)
 }

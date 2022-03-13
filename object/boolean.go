@@ -28,10 +28,10 @@ func ReadBool(r file.Reader) (Bool, error) {
 		if read == 'e' {
 			return Bool(false), nil
 		} else {
-			return BadBool, &ErrBadBool{r.Position(), a + string(read)}
+			return BadBool, &BadBoolError{r.Position(), a + string(read)}
 		}
 	default:
-		return BadBool, &ErrBadBool{r.Position(), a}
+		return BadBool, &BadBoolError{r.Position(), a}
 	}
 	// fixed length representations,
 	// don't need to unread anything
@@ -58,11 +58,11 @@ func (b Bool) String() string {
 	}
 }
 
-type ErrBadBool struct {
+type BadBoolError struct {
 	Position int
 	Text     string
 }
 
-func (e *ErrBadBool) Error() string {
+func (e *BadBoolError) Error() string {
 	return fmt.Sprintf("expected true/false, got \"%s\" at %d", e.Text, e.Position)
 }

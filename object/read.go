@@ -41,7 +41,7 @@ func ReadDirectObject(r file.Reader) (Object, error) {
 			return ReadString(r)
 		}
 	default:
-		return nil, &ErrUnexpectedObject{r.Position(), "direct object", string(r1)}
+		return nil, &UnexpectedObjectError{r.Position(), "direct object", string(r1)}
 	}
 }
 
@@ -65,13 +65,13 @@ func ReadArrayMember(r file.Reader) (Object, error) {
 	return ReadDirectObject(r)
 }
 
-type ErrUnexpectedObject struct {
+type UnexpectedObjectError struct {
 	Position int
 	Expected string
 	Got      string
 }
 
-func (e *ErrUnexpectedObject) Error() string {
+func (e *UnexpectedObjectError) Error() string {
 	return fmt.Sprintf("unexpected %s at %d, expected %s",
 		e.Got, e.Position, e.Expected)
 }

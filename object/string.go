@@ -24,7 +24,7 @@ func ReadString(r file.Reader) (*String, error) {
 	case '<':
 		return readHexString(r)
 	default:
-		return nil, &ErrBadStringStart{r.Position(), id}
+		return nil, &BadStringStartError{r.Position(), id}
 	}
 }
 
@@ -35,13 +35,13 @@ func readLiteralString(r file.Reader) (*String, error) {
 	for {
 		read, _, err := r.ReadRune()
 		if err != nil {
-			return nil, &ErrRunawayString{r.Position(), ')', err}
+			return nil, &RunawayStringError{r.Position(), ')', err}
 		}
 
 		if read == '\\' {
 			read, _, err = r.ReadRune()
 			if err != nil {
-				return nil, &ErrRunawayEscape{r.Position(), err}
+				return nil, &RunawayEscapeError{r.Position(), err}
 			}
 
 			switch read {
@@ -70,7 +70,7 @@ func readLiteralString(r file.Reader) (*String, error) {
 				}
 
 				if read != '\n' {
-					return nil, &ErrRunawayEscape{r.Position(), err}
+					return nil, &RunawayEscapeError{r.Position(), err}
 				}
 			default:
 				read, err = readOctal(r, read)
@@ -87,17 +87,14 @@ func readLiteralString(r file.Reader) (*String, error) {
 		} else if read == ')' {
 			parens--
 			if parens < 0 {
+				// end is detected by the closing character,
+				// so we don't need to unread it.
 				return &out, nil
 			}
 		}
 
 		out.S += string(read)
 	}
-
-	// end is detected by the closing character,
-	// so we don't need to unread it.
-
-	return &out, nil
 }
 
 func readOctal(r file.Reader, pre rune) (rune, error) { // TODO The number ddd may consist of one, two, or three octal digits
@@ -138,38 +135,38 @@ func (s *String) String() string {
 	return "string(" + s.S + ")"
 }
 
-type ErrBadStringStart struct {
+type BadStringStartError struct {
 	Pos   int
 	Start rune
 }
 
-func (e *ErrBadStringStart) Error() string {
+func (e *BadStringStartError) Error() string {
 	return fmt.Sprintf("expected string at pos %d, got %q instead", e.Pos, e.Start)
 }
 
-type ErrRunawayString struct {
+type RunawayStringError struct {
 	Pos    int
 	Closer rune
 	Err    error
 }
 
-func (e *ErrRunawayString) Error() string {
+func (e *RunawayStringError) Error() string {
 	return fmt.Sprintf("got error %s reading string at %d while looking for %q", e.Err, e.Pos, e.Closer)
 }
 
-func (e *ErrRunawayString) Unwrap() error {
+func (e *RunawayStringError) Unwrap() error {
 	return e.Err
 }
 
-type ErrRunawayEscape struct {
+type RunawayEscapeError struct {
 	Pos int
 	Err error
 }
 
-func (e *ErrRunawayEscape) Error() string {
+func (e *RunawayEscapeError) Error() string {
 	return fmt.Sprintf("got error %s reading escape sequence at %d", e.Err, e.Pos)
 }
 
-func (e *ErrRunawayEscape) Unwrap() error {
+func (e *RunawayEscapeError) Unwrap() error {
 	return e.Err
 }

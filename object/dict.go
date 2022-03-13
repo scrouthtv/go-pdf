@@ -27,7 +27,7 @@ func ReadDict(r file.Reader) (*Dict, error) {
 	}
 
 	if start != "<<" {
-		return nil, &ErrBadDictStart{r.Position(), start}
+		return nil, &BadDictStartError{r.Position(), start}
 	}
 
 	end, err := r.PeekString(2)
@@ -70,11 +70,11 @@ func (d *Dict) String() string {
 	panic("not impl")
 }
 
-type ErrBadDictStart struct {
+type BadDictStartError struct {
 	Pos   int
 	Start string
 }
 
-func (e *ErrBadDictStart) Error() string {
+func (e *BadDictStartError) Error() string {
 	return fmt.Sprintf("expected dictionary at pos %d, got %s instead", e.Pos, e.Start)
 }

@@ -19,16 +19,16 @@ var BadArray = &Array{}
 func ReadArray(r file.Reader) (*Array, error) {
 	id, _, err := r.ReadRune()
 	if err != nil {
-		return nil, err
+		return nil, &MissingArrayTokenError{r.Position(), err}
 	}
 
 	if id != '[' {
-		return nil, &ErrBadArrayStart{r.Position(), id}
+		return nil, &BadArrayStartError{r.Position(), id}
 	}
 
 	id, err = r.PeekRune()
 	if err != nil {
-		return nil, err
+		return nil, &MissingArrayTokenError{r.Position(), err}
 	}
 
 	arr := Array{}
@@ -36,19 +36,19 @@ func ReadArray(r file.Reader) (*Array, error) {
 	for id != ']' {
 		obj, err := ReadArrayMember(r)
 		if err != nil {
-			return BadArray, err // TODO pack error
+			return BadArray, &BadArrayMemberError{err}
 		}
 
 		arr.Elems = append(arr.Elems, obj)
 
 		id, _, err = r.ReadRune()
 		if err != nil {
-			return BadArray, err // TODO pack error
+			return BadArray, &MissingArrayTokenError{r.Position(), err}
 		}
 
 		if id != ' ' && id != ']' {
 			what, _ := r.PeekRune()
-			return BadArray, &ErrRunawayArrayMember{r.Position(), what}
+			return BadArray, &RunawayArrayMemberError{r.Position(), what}
 		}
 	}
 
@@ -97,20 +97,41 @@ func (a *Array) String() string {
 	return out.String()
 }
 
-type ErrBadArrayStart struct {
+type BadArrayStartError struct {
 	Pos   int
 	Start rune
 }
 
-func (e *ErrBadArrayStart) Error() string {
+func (e *BadArrayStartError) Error() string {
 	return fmt.Sprintf("expected array at pos %d, got %q instead", e.Pos, e.Start)
 }
 
-type ErrRunawayArrayMember struct {
+type RunawayArrayMemberError struct {
 	Pos  int
 	What rune
 }
 
-func (e *ErrRunawayArrayMember) Error() string {
+func (e *RunawayArrayMemberError) Error() string {
 	return fmt.Sprintf("runaway array member at pos %d, got %q", e.Pos, e.What)
+}
+
+type BadArrayMemberError struct {
+	Err error
+}
+
+func (e *BadArrayMemberError) Error() string {
+	return "reading array member: " + e.Err.Error()
+}
+
+func (e *BadArrayMemberError) Unwrap() error {
+	return e.Err
+}
+
+type MissingArrayTokenError struct {
+	Position int
+	Err      error
+}
+
+func (e *MissingArrayTokenError) Error() string {
+	return fmt.Sprintf("error reading array token at %d: %s", e.Position, e.Err.Error())
 }

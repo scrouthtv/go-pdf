@@ -23,7 +23,7 @@ func ReadName(r file.Reader) (*Name, error) {
 	}
 
 	if read != '/' {
-		return nil, &ErrBadNameStart{r.Position(), read}
+		return nil, &BadNameStartError{r.Position(), read}
 	}
 
 	out := Name{""}
@@ -77,11 +77,11 @@ func (n *Name) String() string {
 	return "name(" + n.Name + ")"
 }
 
-type ErrBadNameStart struct {
+type BadNameStartError struct {
 	Pos   int
 	Start rune
 }
 
-func (e *ErrBadNameStart) Error() string {
+func (e *BadNameStartError) Error() string {
 	return fmt.Sprintf("expected name at pos %d, got %q instead", e.Pos, e.Start)
 }

@@ -7,10 +7,10 @@ import (
 	"github.com/scrouthtv/go-pdf/file"
 )
 
-type ObjId struct {
-	// Id is the object number. Object numbers can be arbitrarily assigned.
+type ObjID struct {
+	// ID is the object number. Object numbers can be arbitrarily assigned.
 	// However, they should be unique.
-	Id Integer
+	ID Integer
 
 	// Gen is the object's generation number. It is non-negative and
 	// defaults to 0. Other generation numbers only appear in later file
@@ -18,12 +18,12 @@ type ObjId struct {
 	Gen Integer
 }
 
-func (o *ObjId) String() string {
-	return fmt.Sprintf("%d/%d", o.Id, o.Gen)
+func (o *ObjID) String() string {
+	return fmt.Sprintf("%d/%d", o.ID, o.Gen)
 }
 
 type Indirect struct {
-	Id    ObjId
+	ID    ObjID
 	Value Object
 }
 
@@ -39,10 +39,12 @@ func HasIndirect(r file.Reader) bool {
 		if err != nil {
 			return false
 		}
+
 		if read == ' ' {
 			spc++
 		}
 	}
+
 	s, err := r.ReadString(5)
 	if err != nil {
 		return false
@@ -55,7 +57,7 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 	i := Indirect{}
 	var err error
 
-	i.Id.Id, err = ReadInteger(r)
+	i.ID.ID, err = ReadInteger(r)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +71,7 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 		return nil, &ErrRunawayIndirectMember{r.Position()}
 	}
 
-	i.Id.Gen, err = ReadInteger(r)
+	i.ID.Gen, err = ReadInteger(r)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +90,7 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 }
 
 func (i *Indirect) Write(w file.Writer) error {
-	err := i.Id.Id.Write(w)
+	err := i.ID.ID.Write(w)
 	if err != nil {
 		return err
 	}
@@ -98,7 +100,7 @@ func (i *Indirect) Write(w file.Writer) error {
 		return err
 	}
 
-	err = i.Id.Gen.Write(w)
+	err = i.ID.Gen.Write(w)
 	if err != nil {
 		return err
 	}
@@ -114,6 +116,7 @@ func (i *Indirect) Write(w file.Writer) error {
 	}
 
 	_, err = w.WriteString("\r\nendobj")
+
 	return err
 }
 

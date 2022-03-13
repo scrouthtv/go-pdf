@@ -32,6 +32,7 @@ func ReadArray(r file.Reader) (*Array, error) {
 	}
 
 	arr := Array{}
+
 	for id != ']' {
 		obj, err := ReadArrayMember(r)
 		if err != nil {

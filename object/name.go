@@ -39,6 +39,7 @@ func ReadName(r file.Reader) (*Name, error) {
 			if err != nil {
 				return nil, err // TODO pack error
 			}
+
 			out.Name += string(read)
 		} else if isTokenDelimiter(read) {
 			// end is detected by an invalid character,

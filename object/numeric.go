@@ -15,6 +15,7 @@ type Numeric interface {
 // ReadNumeric may read either an Integer or a Real.
 func ReadNumeric(r file.Reader) (Numeric, error) {
 	a := ""
+
 	read, _, err := r.ReadRune()
 	if err != nil {
 		return BadInteger, err
@@ -24,6 +25,7 @@ func ReadNumeric(r file.Reader) (Numeric, error) {
 
 	for isNumericCharacter(read) {
 		a += string(read)
+
 		if read == '.' {
 			isfloat = true
 		}
@@ -64,6 +66,7 @@ func NewIntegerFromString(s string) (Integer, error) {
 
 func ReadInteger(r file.Reader) (Integer, error) {
 	a := ""
+
 	read, _, err := r.ReadRune()
 	if err != nil {
 		return BadInteger, err // TODO pack error
@@ -71,6 +74,7 @@ func ReadInteger(r file.Reader) (Integer, error) {
 
 	for read >= '0' && read <= '9' || read == '+' || read == '-' {
 		a += string(read)
+
 		read, _, err = r.ReadRune()
 		if err != nil {
 			continue

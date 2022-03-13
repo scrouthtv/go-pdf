@@ -62,21 +62,22 @@ func readLiteralString(r file.Reader) (*String, error) {
 			case '\\':
 				out.S += "\\"
 			case '\r':
-				// discard reverse solidus and EOL marker when escaped.
+				// discard backslash and EOL marker when escaped.
 				// EOL marker always consists of CRLF.
 				read, _, err = r.ReadRune()
 				if err != nil {
 					return nil, err // TODO pack error
 				}
+
 				if read != '\n' {
 					return nil, &ErrRunawayEscape{r.Position(), err}
 				}
-				// TODO check if read == '\n'
 			default:
 				read, err = readOctal(r, read)
 				if err != nil {
 					return nil, err
 				}
+
 				out.S += string(read)
 			}
 
@@ -106,6 +107,7 @@ func readOctal(r file.Reader, pre rune) (rune, error) { // TODO The number ddd m
 	}
 
 	res, err := strconv.ParseUint(string(pre)+s, 8, 32)
+
 	return rune(res), err
 }
 

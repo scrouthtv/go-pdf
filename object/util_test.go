@@ -54,6 +54,7 @@ func (s *StringPDF) PeekString(len int) (string, error) {
 
 func (s *StringPDF) ReadString(len int) (string, error) {
 	buf := make([]byte, len)
+
 	_, err := s.Read(buf)
 	if err != nil {
 		return "", err

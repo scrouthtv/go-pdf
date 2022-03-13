@@ -88,6 +88,7 @@ func TestArrayWithIndirectObj(t *testing.T) {
 	if !ok {
 		t.Error("element 0 is not an integer")
 	}
+
 	if e0 != 12 {
 		t.Errorf("element 0: expected int(12), got int(%d)", e0)
 	}
@@ -97,8 +98,8 @@ func TestArrayWithIndirectObj(t *testing.T) {
 		t.Error("element 1 is not an integer")
 	}
 
-	if e1.Id.Id != 0 || e1.Id.Gen != 22 {
-		t.Errorf("element 1: wrong indirect id, expected 0/22, got %s", e1.Id.String())
+	if e1.ID.ID != 0 || e1.ID.Gen != 22 {
+		t.Errorf("element 1: wrong indirect id, expected 0/22, got %s", e1.ID.String())
 	}
 
 	e1v, ok := e1.Value.(*object.String)
@@ -114,6 +115,7 @@ func TestArrayWithIndirectObj(t *testing.T) {
 	if !ok {
 		t.Error("element 2 is not an integer")
 	}
+
 	if e2 != 34 {
 		t.Errorf("element 2: expected int(34), got int(%d)", e2)
 	}

@@ -21,7 +21,6 @@ func ReadNull(r file.Reader) (Null, error) {
 	} else {
 		return TheNull, &ErrBadNull{r.Position(), a}
 	}
-
 	// fixed length representation,
 	// no need to unread anything
 }

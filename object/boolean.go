@@ -33,7 +33,6 @@ func ReadBool(r file.Reader) (Bool, error) {
 	default:
 		return BadBool, &ErrBadBool{r.Position(), a}
 	}
-
 	// fixed length representations,
 	// don't need to unread anything
 }

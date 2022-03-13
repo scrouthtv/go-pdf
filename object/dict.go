@@ -25,6 +25,7 @@ func ReadDict(r file.Reader) (*Dict, error) {
 	if err != nil {
 		return nil, err // TODO pack error
 	}
+
 	if start != "<<" {
 		return nil, &ErrBadDictStart{r.Position(), start}
 	}

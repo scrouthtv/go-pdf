@@ -64,6 +64,10 @@ func ReadDict(r file.Reader) (*Dict, error) {
 			return nil, err // TODO pack error
 		}
 	}
+	_, err = r.ReadString(2)
+	if err != nil {
+		return nil, err
+	}
 
 	// end is detected by the closing characters,
 	// no need to unread anything

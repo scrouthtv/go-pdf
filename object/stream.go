@@ -2,15 +2,18 @@ package object
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/scrouthtv/go-pdf/file"
 )
 
 // Stream is a (virtually unlimited) sequence of bytes.
 type Stream struct {
-	BlobS uint64
-	BlobE uint64
-	Dict  *Dict
+	BlobS    uint64
+	BlobE    uint64
+	Dict     *Dict
+	contentS string
+	contentE string
 }
 
 func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
@@ -31,10 +34,13 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 
 	//TODO: Since PDF 1.2 content can be in extra file
 
+	s.contentS, _ = r.PeekString(2)
 	err = r.Advance(int(d.Dict["Length"].(Integer)))
 	if err != nil {
 		return nil, err
 	}
+	r.Advance(-2)
+	s.contentE, _ = r.ReadString(2)
 	s.BlobE = uint64(r.Position())
 	err = DiscardEOL(r)
 	if err != nil {
@@ -43,6 +49,9 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 
 	e, err := r.ReadString(9)
 
+	if err != nil {
+		return nil, err
+	}
 	if e != "endstream" {
 		return nil, &LateEndOfDataMarkerError{r.Position()}
 	}
@@ -51,7 +60,7 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 }
 
 func (s *Stream) String() string {
-	panic("NOT IMPLEMENTED!") //TODO
+	return "Stream(" + strconv.FormatUint(s.BlobS, 10) + "-" + strconv.FormatUint(s.BlobE, 10) + ":" + s.contentS + ":" + s.contentE + ")"
 }
 
 func (s *Stream) Write(r file.Writer) error {

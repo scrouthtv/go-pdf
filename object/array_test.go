@@ -10,7 +10,7 @@ func TestArray(t *testing.T) {
 	in := "[549 3.14 false (Ralph) /SomeName]"
 	rdr := NewPdf(in)
 
-	is, err := object.ReadArray(rdr)
+	is, err := object.ReadArray(rdr, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -74,7 +74,7 @@ func TestArrayWithIndirectObj(t *testing.T) {
 	endobj 34]`
 	rdr := NewPdf(in)
 
-	is, err := object.ReadArray(rdr)
+	is, err := object.ReadArray(rdr, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -95,7 +95,7 @@ func TestArrayWithIndirectObj(t *testing.T) {
 		t.Errorf("element 0: expected int(12), got int(%d)", e0)
 	}
 
-	e1, ok := is.Elems[1].(*object.Indirect)
+	e1, ok := is.Elems[1].(*object.IndirectVal)
 	if !ok {
 		t.Error("element 1 is not an integer")
 	}
@@ -104,7 +104,7 @@ func TestArrayWithIndirectObj(t *testing.T) {
 		t.Errorf("element 1: wrong indirect id, expected 1/22, got %s", e1.ID.String())
 	}
 
-	e1v, ok := e1.Value.(*object.String)
+	e1v, ok := e1.Value().(*object.String)
 	if !ok {
 		t.Errorf("element 1: indirect value is not a string")
 	}

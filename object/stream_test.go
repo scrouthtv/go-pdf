@@ -21,11 +21,33 @@ Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming 
 endstreamendobj
 	`
 	pdf := NewPdf(is)
-	i, err := object.ReadIndirect(pdf)
+	i, err := object.ReadIndirect(pdf, nil)
 	if err != nil {
 		panic(err)
 	}
 	if i.String() != "indirect(45679873459/6583956):Stream(78-2182:Lo:t.)" {
 		t.Error(i.String())
 	}
+}
+
+func TestStreamEx(t *testing.T) {
+	is := `[7 0 obj
+	<</Length 8 0 R>> %An indirect reference to object 8
+stream
+	BT
+		/F1 12 Tf
+		72 712 Td
+		(A stream with an indirect length) Tj
+	ET
+endstream
+endobj
+8 0 obj
+	77 %The length of the preceding stream
+endobj]`
+	pdf := NewPdf(is)
+	i, err := object.ReadArray(pdf, nil) // TODO body
+	if err != nil {
+		panic(err)
+	}
+	println(i.String())
 }

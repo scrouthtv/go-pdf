@@ -5,18 +5,19 @@ import (
 	"strings"
 
 	"github.com/scrouthtv/go-pdf/file"
+	"github.com/scrouthtv/go-pdf/shared"
 )
 
 // Array is a collection of objects.
 // PDF arrays may contain objects of any (and mixed) type.
 // This also allows for nested arrays.
 type Array struct {
-	Elems []Object
+	Elems []shared.Object
 }
 
 var BadArray = &Array{}
 
-func ReadArray(r file.Reader) (*Array, error) {
+func ReadArray(r file.Reader, b shared.Body) (*Array, error) {
 	id, _, err := r.ReadRune()
 	if err != nil {
 		return nil, &MissingArrayTokenError{r.Position(), err}
@@ -34,7 +35,7 @@ func ReadArray(r file.Reader) (*Array, error) {
 	arr := Array{}
 
 	for id != ']' {
-		obj, err := ReadArrayMember(r)
+		obj, err := ReadArrayMember(r, b)
 		if err != nil {
 			return BadArray, &BadArrayMemberError{err}
 		}

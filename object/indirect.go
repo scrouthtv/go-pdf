@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/scrouthtv/go-pdf/file"
+	"github.com/scrouthtv/go-pdf/shared"
 )
 
 type ObjID struct {
@@ -22,9 +23,23 @@ func (o *ObjID) String() string {
 	return fmt.Sprintf("%d/%d", o.ID, o.Gen)
 }
 
-type Indirect struct {
+func (o *ObjID) Equal(other shared.ID) bool {
+	return false // TODO
+}
+
+type Indirect interface {
+	shared.Object
+	Value() shared.Object
+}
+
+type IndirectVal struct {
 	ID    ObjID
-	Value Object
+	value shared.Object
+}
+
+type IndirectRef struct {
+	ID   ObjID
+	body shared.Body
 }
 
 // HasIndirect checks whether the next token is an indirect object.
@@ -45,6 +60,15 @@ func HasIndirect(r file.Reader) bool {
 		}
 	}
 
+	bR, err := r.PeekRune()
+	if err != nil {
+		return false
+	}
+	if bR == 'R' {
+		r.ReadRune()
+		return true
+	}
+
 	s, err := r.ReadString(3)
 	if err != nil {
 		return false
@@ -53,23 +77,35 @@ func HasIndirect(r file.Reader) bool {
 	return s == "obj"
 }
 
-func ReadIndirect(r file.Reader) (*Indirect, error) {
-	i := Indirect{}
+func ReadIndirect(r file.Reader, b shared.Body) (Indirect, error) {
+	i := ObjID{}
 	var err error
 
-	i.ID.ID, err = ReadInteger(r)
+	i.ID, err = ReadInteger(r)
 	if err != nil {
 		return nil, err
 	}
 
 	DiscardWhitespace(r)
 
-	i.ID.Gen, err = ReadInteger(r)
+	i.Gen, err = ReadInteger(r)
 	if err != nil {
 		return nil, err
 	}
 
 	DiscardWhitespace(r)
+
+	bR, err := r.PeekRune()
+	if err != nil {
+		return nil, err
+	}
+	if bR == 'R' {
+		_, _, err := r.ReadRune()
+		if err != nil {
+			return nil, err
+		}
+		return &IndirectRef{i, b}, nil
+	}
 
 	rs, err := r.ReadString(3)
 	if err != nil {
@@ -82,8 +118,9 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 
 	DiscardWhitespace(r) // whitespace after obj
 
+	o := IndirectVal{ID: i}
 	// FIXME this can also be an indirect object
-	i.Value, err = ReadDirectObject(r)
+	o.value, err = ReadDirectObject(r, b)
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +136,10 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 		return nil, &BadIndirectSpecifierError{r.Position(), "endobj", rs}
 	}
 
-	return &i, nil
+	return &o, nil
 }
 
-func (i *Indirect) Write(w file.Writer) error {
+func (i *IndirectVal) Write(w file.Writer) error {
 	err := i.ID.ID.Write(w)
 	if err != nil {
 		return err
@@ -123,7 +160,7 @@ func (i *Indirect) Write(w file.Writer) error {
 		return err
 	}
 
-	err = i.Value.Write(w)
+	err = i.Value().Write(w)
 	if err != nil {
 		return err
 	}
@@ -133,8 +170,40 @@ func (i *Indirect) Write(w file.Writer) error {
 	return err
 }
 
-func (i *Indirect) String() string {
-	return fmt.Sprintf("indirect(%s):%s", i.ID.String(), i.Value.String())
+func (i *IndirectVal) String() string {
+	return fmt.Sprintf("indirect(%s):%s", i.ID.String(), i.Value().String())
+}
+
+func (i *IndirectVal) Value() shared.Object {
+	return i.value
+}
+func (i *IndirectRef) Write(w file.Writer) error {
+	err := i.ID.ID.Write(w)
+	if err != nil {
+		return err
+	}
+
+	err = w.WriteRune(' ')
+	if err != nil {
+		return err
+	}
+
+	err = i.ID.Gen.Write(w)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.WriteString(" R")
+
+	return err
+}
+
+func (i *IndirectRef) String() string {
+	return fmt.Sprintf("indirectRef(%s)", i.ID.String())
+}
+
+func (i *IndirectRef) Value() shared.Object {
+	return i.body.Resolve(&i.ID)
 }
 
 type RunawayIndirectMemberError struct {

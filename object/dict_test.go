@@ -22,7 +22,7 @@ func TestBasicDict(t *testing.T) {
 
 	pdf := NewPdf(in)
 
-	d, err := object.ReadDict(pdf)
+	d, err := object.ReadDict(pdf, nil)
 	if err != nil {
 		t.Error(err)
 	}

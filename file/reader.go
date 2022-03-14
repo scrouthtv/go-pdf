@@ -14,4 +14,6 @@ type Reader interface {
 	ReadString(length int) (string, error)
 	PeekRune() (r rune, err error)
 	PeekString(length int) (string, error)
+
+	Advance(amount int) error
 }

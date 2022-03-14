@@ -5,16 +5,11 @@ import (
 	"io"
 
 	"github.com/scrouthtv/go-pdf/file"
+	"github.com/scrouthtv/go-pdf/shared"
 )
 
-type Object interface {
-	fmt.Stringer
-
-	Write(file.Writer) error
-}
-
 // ReadDirectObject reads anything but an indirect object or a stream.
-func ReadDirectObject(r file.Reader) (Object, error) {
+func ReadDirectObject(r file.Reader, b shared.Body) (shared.Object, error) {
 	r1, err := r.PeekRune()
 	if err != nil {
 		return nil, err
@@ -32,7 +27,7 @@ func ReadDirectObject(r file.Reader) (Object, error) {
 	case '/':
 		return ReadName(r)
 	case '[':
-		return ReadArray(r)
+		return ReadArray(r, b)
 	case 'n':
 		return ReadNull(r)
 	case '<':
@@ -43,7 +38,7 @@ func ReadDirectObject(r file.Reader) (Object, error) {
 		}
 
 		if r2 == "<<" {
-			dict, err := ReadDict(r)
+			dict, err := ReadDict(r, b)
 			if err != nil {
 				return nil, err
 			}
@@ -75,7 +70,7 @@ func ReadDirectObject(r file.Reader) (Object, error) {
 // streams.
 // These are (currently, as of PDF2.0) the same objects as are allowed as
 // dictionary value.
-func ReadArrayMember(r file.Reader) (Object, error) {
+func ReadArrayMember(r file.Reader, b shared.Body) (shared.Object, error) {
 	r1, err := r.PeekRune()
 	if err != nil {
 		return nil, err
@@ -83,13 +78,13 @@ func ReadArrayMember(r file.Reader) (Object, error) {
 
 	if isNumericCharacter(r1) {
 		if HasIndirect(r) {
-			return ReadIndirect(r)
+			return ReadIndirect(r, b)
 		} else {
 			return ReadNumeric(r)
 		}
 	}
 
-	return ReadDirectObject(r)
+	return ReadDirectObject(r, b)
 }
 
 type UnexpectedObjectError struct {

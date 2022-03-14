@@ -5,11 +5,12 @@ import (
 	"strconv"
 
 	"github.com/scrouthtv/go-pdf/file"
+	"github.com/scrouthtv/go-pdf/shared"
 )
 
 // Numeric may either be an Integer or a Floating number.
 type Numeric interface {
-	Object
+	shared.Object
 }
 
 // ReadNumeric may read either an Integer or a Real.

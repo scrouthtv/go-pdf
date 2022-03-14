@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/scrouthtv/go-pdf/file"
+	"github.com/scrouthtv/go-pdf/shared"
 )
 
 // Dict represents a pdf dictionary.
@@ -13,10 +14,10 @@ type Dict struct {
 	// Using the builtin map is fine, as
 	//  - the keys are unique
 	//  - the ordering does not matter
-	Dict map[string]Object
+	Dict map[string]shared.Object
 }
 
-func ReadDict(r file.Reader) (*Dict, error) {
+func ReadDict(r file.Reader, b shared.Body) (*Dict, error) {
 	// Dictionary entry with value null shall be ignored.
 	// Keys are unique, as names are unique.
 	// A dict may contain 0 entries.
@@ -38,7 +39,7 @@ func ReadDict(r file.Reader) (*Dict, error) {
 		return nil, err // TODO pack error
 	}
 
-	d := Dict{make(map[string]Object)}
+	d := Dict{make(map[string]shared.Object)}
 
 	for end != ">>" {
 		DiscardWhitespace(r)
@@ -50,7 +51,7 @@ func ReadDict(r file.Reader) (*Dict, error) {
 
 		DiscardWhitespace(r)
 
-		v, err := ReadArrayMember(r)
+		v, err := ReadArrayMember(r, b)
 		if err != nil {
 			return nil, err // TODO pack error
 		}

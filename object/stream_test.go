@@ -18,16 +18,21 @@ endstreamendobj
 	pdf := NewPdf(is)
 	i, err := object.ReadIndirect(pdf, nil)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
-	if i.String() != "indirect(5/0):Stream(60-71:Lo:um)" {
-		t.Error(i.String())
+
+	if i.String() != "indirect(5/0):Stream(60-71)" {
+		t.Error("got bad stream data:", i.String())
 	}
 }
 
+// TODO comments
+
 func TestStreamEx(t *testing.T) {
-	is := `[7 0 obj
-	<</Length 8 0 R>> %An indirect reference to object 8
+	is := `[8 0 obj
+	77
+endobj
+<</Length 8 0 R>>
 stream
 	BT
 		/F1 12 Tf
@@ -36,13 +41,14 @@ stream
 	ET
 endstream
 endobj
-8 0 obj
-	77 %The length of the preceding stream
-endobj]`
+]
+`
+
 	pdf := NewPdf(is)
 	i, err := object.ReadArray(pdf, body.NewBody()) // TODO body
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
+
 	println(i.String())
 }

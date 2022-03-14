@@ -215,12 +215,12 @@ func (e *RunawayIndirectMemberError) Error() string {
 }
 
 type BadIndirectSpecifierError struct {
-	Position  int
-	Expected  string
-	Specifier string
+	Position int
+	Expected string
+	Got      string
 }
 
 func (e *BadIndirectSpecifierError) Error() string {
-	return fmt.Sprintf("bad indirect specifier, expected %s, got %s at %d",
-		e.Specifier, e.Expected, e.Position)
+	return fmt.Sprintf("bad indirect specifier, expected \"%s\", got \"%s\" at %d",
+		e.Expected, e.Got, e.Position)
 }

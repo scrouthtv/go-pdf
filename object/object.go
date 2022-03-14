@@ -2,7 +2,6 @@ package object
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/scrouthtv/go-pdf/file"
 	"github.com/scrouthtv/go-pdf/shared"
@@ -42,21 +41,16 @@ func ReadDirectObject(r file.Reader, b shared.Body) (shared.Object, error) {
 			if err != nil {
 				return nil, err
 			}
-			s, err := r.PeekString(6)
-			if err == io.EOF {
+
+			if HasStream(r) {
+				st, err := ReadStream(r, dict)
+				if err != nil {
+					return nil, err
+				}
+				return st, nil
+			} else {
 				return dict, nil
 			}
-			if err != nil {
-				return nil, err
-			}
-			if s != "stream" {
-				return dict, nil
-			}
-			st, err := ReadStream(r, dict)
-			if err != nil {
-				return nil, err
-			}
-			return st, nil
 		} else {
 			return ReadString(r)
 		}

@@ -2,7 +2,7 @@ package object_test
 
 var test_names = map[string]string{
 	"/Name1":                             "Name1",
-	"/ASomewhatLongerName":               "ASomewhatLongerName",
+	"/ASomewhat#20LongerName":            "ASomewhatLongerName",
 	"/A;Name_With-Various***Characters?": "A;Name_With-Various***Characters?",
 	"/1.2":                               "1.2",
 	"/$$":                                "$$",

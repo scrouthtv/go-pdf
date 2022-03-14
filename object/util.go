@@ -1,10 +1,21 @@
 package object
 
-import "github.com/scrouthtv/go-pdf/file"
+import (
+	"strconv"
+
+	"github.com/scrouthtv/go-pdf/file"
+)
 
 func readHexCharacter(r file.Reader) (rune, error) {
-	panic("not impl")
-	// TODO
+	l, err := r.ReadString(2)
+	if err != nil {
+		return rune(0), err
+	}
+	c, err := strconv.ParseInt(l, 16, 8)
+	if err != nil {
+		return rune(0), err
+	}
+	return rune(c), err
 }
 
 func isTokenDelimiter(r rune) bool {

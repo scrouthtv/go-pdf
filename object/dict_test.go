@@ -10,8 +10,8 @@ func TestBasicDict(t *testing.T) {
 	in := `<</Type /Example
 	/Subtype /DictionaryExample
 	/Version 0.01
-	/IntegerItem 12
-	/StringItem (a string)
+	/Integer#20Item 12
+	/StringItem (a string)/StringItem#7b <3A20>
 	/Subdictionary <<
 		/Item1 0.4
 		/Item2 true

@@ -108,8 +108,28 @@ func readOctal(r file.Reader, pre rune) (rune, error) { // TODO The number ddd m
 	return rune(res), err
 }
 
+// readHexString reads a string of consecutive two-digit integers
+// and parses them as hexadecimal numbers.
+// It ends when reaching a '>'.
 func readHexString(r file.Reader) (*String, error) {
-	panic("not impl")
+	out := String{"", false}
+
+	for {
+		next, err := r.PeekRune()
+		if err != nil {
+			return nil, err
+		}
+		if next == '>' {
+			r.ReadRune()
+			break
+		}
+		c, err := readHexCharacter(r)
+		if err != nil {
+			return nil, err
+		}
+		out.S += string(c)
+	}
+	return &out, nil
 }
 
 func (s *String) Write(w file.Writer) error {

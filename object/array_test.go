@@ -69,7 +69,7 @@ func TestArray(t *testing.T) {
 }
 
 func TestArrayWithIndirectObj(t *testing.T) {
-	in := `[12 0 22 obj
+	in := `[12 1 22 obj
 	(cheap)
 	endobj 34]`
 	rdr := NewPdf(in)
@@ -79,6 +79,8 @@ func TestArrayWithIndirectObj(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
+	t.Log(is)
 
 	if len(is.Elems) != 3 {
 		t.Errorf("wrong array length, expected 3, got %d", len(is.Elems))
@@ -98,8 +100,8 @@ func TestArrayWithIndirectObj(t *testing.T) {
 		t.Error("element 1 is not an integer")
 	}
 
-	if e1.ID.ID != 0 || e1.ID.Gen != 22 {
-		t.Errorf("element 1: wrong indirect id, expected 0/22, got %s", e1.ID.String())
+	if e1.ID.ID != 1 || e1.ID.Gen != 22 {
+		t.Errorf("element 1: wrong indirect id, expected 1/22, got %s", e1.ID.String())
 	}
 
 	e1v, ok := e1.Value.(*object.String)

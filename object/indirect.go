@@ -45,12 +45,12 @@ func HasIndirect(r file.Reader) bool {
 		}
 	}
 
-	s, err := r.ReadString(5)
+	s, err := r.ReadString(3)
 	if err != nil {
 		return false
 	}
 
-	return s == "obj\r\n"
+	return s == "obj"
 }
 
 func ReadIndirect(r file.Reader) (*Indirect, error) {
@@ -62,28 +62,41 @@ func ReadIndirect(r file.Reader) (*Indirect, error) {
 		return nil, err
 	}
 
-	read, _, err := r.ReadRune()
-	if err != nil {
-		return nil, err
-	}
-
-	if read != ' ' {
-		return nil, &RunawayIndirectMemberError{r.Position()}
-	}
+	DiscardWhitespace(r)
 
 	i.ID.Gen, err = ReadInteger(r)
 	if err != nil {
 		return nil, err
 	}
 
-	if read != ' ' {
-		return nil, &RunawayIndirectMemberError{r.Position()}
+	DiscardWhitespace(r)
+
+	rs, err := r.ReadString(3)
+	if err != nil {
+		return nil, err
 	}
+
+	if rs != "obj" {
+		return nil, &BadIndirectSpecifierError{r.Position(), "obj", rs}
+	}
+
+	DiscardWhitespace(r) // whitespace after obj
 
 	// FIXME this can also be an indirect object
 	i.Value, err = ReadDirectObject(r)
 	if err != nil {
 		return nil, err
+	}
+
+	DiscardWhitespace(r) // whitespace after actual contents
+
+	rs, err = r.ReadString(6)
+	if err != nil {
+		return nil, err
+	}
+
+	if rs != "endobj" {
+		return nil, &BadIndirectSpecifierError{r.Position(), "endobj", rs}
 	}
 
 	return &i, nil
@@ -121,7 +134,7 @@ func (i *Indirect) Write(w file.Writer) error {
 }
 
 func (i *Indirect) String() string {
-	panic("not impl")
+	return fmt.Sprintf("indirect(%s):%s", i.ID.String(), i.Value.String())
 }
 
 type RunawayIndirectMemberError struct {
@@ -130,4 +143,15 @@ type RunawayIndirectMemberError struct {
 
 func (e *RunawayIndirectMemberError) Error() string {
 	return fmt.Sprintf("runaway indirect member, excepted space at %d", e.Position)
+}
+
+type BadIndirectSpecifierError struct {
+	Position  int
+	Expected  string
+	Specifier string
+}
+
+func (e *BadIndirectSpecifierError) Error() string {
+	return fmt.Sprintf("bad indirect specifier, expected %s, got %s at %d",
+		e.Specifier, e.Expected, e.Position)
 }

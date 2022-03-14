@@ -41,14 +41,11 @@ func ReadArray(r file.Reader) (*Array, error) {
 
 		arr.Elems = append(arr.Elems, obj)
 
-		id, _, err = r.ReadRune()
+		DiscardWhitespace(r)
+
+		id, err = r.PeekRune()
 		if err != nil {
 			return BadArray, &MissingArrayTokenError{r.Position(), err}
-		}
-
-		if id != ' ' && id != ']' {
-			what, _ := r.PeekRune()
-			return BadArray, &RunawayArrayMemberError{r.Position(), what}
 		}
 	}
 
@@ -120,7 +117,7 @@ type BadArrayMemberError struct {
 }
 
 func (e *BadArrayMemberError) Error() string {
-	return "reading array member: " + e.Err.Error()
+	return "encountered an error reading array member: " + e.Err.Error()
 }
 
 func (e *BadArrayMemberError) Unwrap() error {

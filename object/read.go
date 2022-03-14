@@ -72,6 +72,6 @@ type UnexpectedObjectError struct {
 }
 
 func (e *UnexpectedObjectError) Error() string {
-	return fmt.Sprintf("unexpected %s at %d, expected %s",
+	return fmt.Sprintf("unexpected object identifier \"%s\" at %d, expected %s",
 		e.Got, e.Position, e.Expected)
 }

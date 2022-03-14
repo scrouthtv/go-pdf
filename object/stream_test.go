@@ -3,6 +3,7 @@ package object_test
 import (
 	"testing"
 
+	"github.com/scrouthtv/go-pdf/body"
 	"github.com/scrouthtv/go-pdf/object"
 )
 
@@ -24,7 +25,7 @@ endstreamendobj
 	}
 }
 
-/*func TestStreamEx(t *testing.T) {
+func TestStreamEx(t *testing.T) {
 	is := `[7 0 obj
 	<</Length 8 0 R>> %An indirect reference to object 8
 stream
@@ -39,10 +40,9 @@ endobj
 	77 %The length of the preceding stream
 endobj]`
 	pdf := NewPdf(is)
-	i, err := object.ReadArray(pdf, nil) // TODO body
+	i, err := object.ReadArray(pdf, body.NewBody()) // TODO body
 	if err != nil {
 		panic(err)
 	}
 	println(i.String())
 }
-*/

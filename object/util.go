@@ -30,3 +30,29 @@ func isRegularCharacter(r rune) bool {
 func isNumericCharacter(r rune) bool {
 	return (r >= '0' && r <= '9') || r == '+' || r == '-' || r == '.'
 }
+
+func isWhitespace(r rune) bool {
+	return r == 0 || r == ' ' || r == '\t' ||
+		r == '\r' || r == '\n' || r == 12
+}
+
+func DiscardWhitespace(r file.Reader) error {
+	read, err := r.PeekRune()
+	if err != nil {
+		return err
+	}
+
+	for isWhitespace(read) {
+		_, _, err = r.ReadRune()
+		if err != nil {
+			return err
+		}
+
+		read, err = r.PeekRune()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

@@ -44,6 +44,8 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 
 	//TODO: Since PDF 1.2 content can be in another file
 
+	println("ok")
+
 	lenobj, ok := d.Dict["Length"]
 	if ok {
 		switch v := lenobj.(type) {
@@ -53,10 +55,13 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 		case Indirect:
 			val := v.Value()
 			len, ok := val.(Integer)
+			println(v.String())
 			if ok {
+				println("b")
 				// dict#length is a reference to an integer, use that to read
 				return readStreamWithLength(r, &s, int(len))
 			} else {
+				println("c")
 				// dict#length is a reference to something but an integer, read blindly
 				return readStreamBlind(r, &s)
 			}
@@ -78,6 +83,7 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 // If the stream does not end with "endstream" (EOL markers
 // are ignored), the method returns an error.
 func readStreamWithLength(r file.Reader, target *Stream, length int) (*Stream, error) {
+	println("read w length")
 	err := r.Advance(length)
 	if err != nil {
 		return nil, err

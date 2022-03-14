@@ -40,6 +40,8 @@ func ReadArray(r file.Reader, b shared.Body) (*Array, error) {
 			return BadArray, &BadArrayMemberError{err}
 		}
 
+		println("got a member:", obj.String())
+
 		arr.Elems = append(arr.Elems, obj)
 
 		DiscardWhitespace(r)

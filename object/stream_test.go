@@ -3,6 +3,7 @@ package object_test
 import (
 	"testing"
 
+	"github.com/scrouthtv/go-pdf/body"
 	"github.com/scrouthtv/go-pdf/object"
 )
 
@@ -42,8 +43,8 @@ endstream`
 	t.Log(is)
 }
 
-/*func TestStreamEx(t *testing.T) {
-	is := `[8 0 obj
+func TestStreamEx(t *testing.T) {
+	in := `8 0 obj
 	77
 endobj
 <</Length 8 0 R>>
@@ -55,14 +56,28 @@ stream
 	ET
 endstream
 endobj
-]
 `
+	pdf := NewPdf(in)
+	b := body.NewBody()
 
-	pdf := NewPdf(is)
-	i, err := object.ReadArray(pdf, body.NewBody()) // TODO body
+	is, err := object.ReadIndirect(pdf, b)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 
-	println(i.String())
-}*/
+	object.DiscardWhitespace(pdf)
+	if pdf.Position() != 19 {
+		t.Errorf("Wrong position after first indirect, expected 19, got %d", pdf.Position())
+	}
+
+	b.Obj = append(b.Obj, is.(*object.IndirectVal))
+
+	isd, err := object.ReadIndirect(pdf, b) // TODO body
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(isd)
+}

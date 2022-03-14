@@ -13,7 +13,7 @@ type Dict struct {
 	// Using the builtin map is fine, as
 	//  - the keys are unique
 	//  - the ordering does not matter
-	Dict map[Name]Object
+	Dict map[string]Object
 }
 
 func ReadDict(r file.Reader) (*Dict, error) {
@@ -38,7 +38,7 @@ func ReadDict(r file.Reader) (*Dict, error) {
 		return nil, err // TODO pack error
 	}
 
-	d := Dict{make(map[Name]Object)}
+	d := Dict{make(map[string]Object)}
 
 	for end != ">>" {
 		DiscardWhitespace(r)
@@ -55,7 +55,7 @@ func ReadDict(r file.Reader) (*Dict, error) {
 			return nil, err // TODO pack error
 		}
 
-		d.Dict[*k] = v
+		d.Dict[k.Name] = v
 
 		DiscardWhitespace(r)
 
@@ -88,7 +88,7 @@ func (d *Dict) String() string {
 		}
 
 		out.WriteRune('"')
-		out.WriteString(k.String())
+		out.WriteString(k)
 		out.WriteString("\": ")
 
 		_, issubdict := v.(*Dict)

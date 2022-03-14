@@ -18,6 +18,31 @@ func readHexCharacter(r file.Reader) (rune, error) {
 	return rune(c), err
 }
 
+func DiscardEOL(r file.Reader) error {
+
+	p, err := r.PeekRune()
+	if err != nil {
+		return err
+	}
+	if p == '\r' {
+		_, _, err = r.ReadRune()
+		if err != nil {
+			return err
+		}
+		p, err = r.PeekRune()
+		if err != nil {
+			return err
+		}
+	}
+	if p == '\n' {
+		_, _, err = r.ReadRune()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func isTokenDelimiter(r rune) bool {
 	// Are there any other token delimiters??
 	return isWhitespace(r) || r == '(' || r == ')' ||

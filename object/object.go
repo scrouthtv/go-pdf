@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/scrouthtv/go-pdf/file"
 )
@@ -42,7 +43,25 @@ func ReadDirectObject(r file.Reader) (Object, error) {
 		}
 
 		if r2 == "<<" {
-			return ReadDict(r)
+			dict, err := ReadDict(r)
+			if err != nil {
+				return nil, err
+			}
+			s, err := r.PeekString(6)
+			if err == io.EOF {
+				return dict, nil
+			}
+			if err != nil {
+				return nil, err
+			}
+			if s != "stream" {
+				return dict, nil
+			}
+			st, err := ReadStream(r, dict)
+			if err != nil {
+				return nil, err
+			}
+			return st, nil
 		} else {
 			return ReadString(r)
 		}

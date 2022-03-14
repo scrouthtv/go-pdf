@@ -1,6 +1,7 @@
 package object_test
 
 import (
+	"io"
 	"strings"
 	"testing"
 
@@ -65,6 +66,14 @@ func (s *StringPDF) ReadString(length int) (string, error) {
 	}
 
 	return string(buf), nil
+}
+
+func (s *StringPDF) Advance(amount int) error {
+	_, err := s.Seek(int64(amount), io.SeekCurrent)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func TestDiscardWhitespace(t *testing.T) {

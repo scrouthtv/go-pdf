@@ -17,6 +17,12 @@ type Dict struct {
 	Dict map[string]shared.Object
 }
 
+func NewDict() *Dict {
+	return &Dict{
+		make(map[string]shared.Object),
+	}
+}
+
 func ReadDict(r file.Reader, b shared.Body) (*Dict, error) {
 	// Dictionary entry with value null shall be ignored.
 	// Keys are unique, as names are unique.

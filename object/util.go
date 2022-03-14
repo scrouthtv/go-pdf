@@ -43,6 +43,10 @@ func DiscardEOL(r file.Reader) error {
 	return nil
 }
 
+func isEOL(r rune) bool {
+	return r == '\r' || r == '\n'
+}
+
 func isTokenDelimiter(r rune) bool {
 	// Are there any other token delimiters??
 	return isWhitespace(r) || r == '(' || r == ')' ||

@@ -70,6 +70,13 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 	}
 }
 
+// readStreamWithLength takes a stream object
+// that is already populated with start position and dict
+// and sets the end position to use the specified length.
+//
+// End tokens inside the stream are not checked.
+// If the stream does not end with "endstream" (EOL markers
+// are ignored), the method returns an error.
 func readStreamWithLength(r file.Reader, target *Stream, length int) (*Stream, error) {
 	err := r.Advance(length)
 	if err != nil {
@@ -94,8 +101,34 @@ func readStreamWithLength(r file.Reader, target *Stream, length int) (*Stream, e
 	return target, nil
 }
 
+// readStreamBlind takes a stream object that is already
+// populated with start position and dict and sets the
+// end position.
+//
+// The end position is determined by searching for an EOL marker,
+// that is followed by "endstream".
+// The end position is set to the position of that EOL marker.
 func readStreamBlind(r file.Reader, target *Stream) (*Stream, error) {
-	panic("todo")
+	for {
+		read, _, err := r.ReadRune()
+		if err != nil {
+			return nil, err
+		}
+
+		if isEOL(read) {
+			target.BlobE = uint64(r.Position() - 1)
+			DiscardEOL(r) // discard additional LF
+
+			reads, err := r.ReadString(9)
+			if err != nil {
+				return nil, err
+			}
+
+			if reads == "endstream" {
+				return target, nil
+			}
+		}
+	}
 }
 
 func (s *Stream) String() string {

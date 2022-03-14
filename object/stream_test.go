@@ -3,7 +3,6 @@ package object_test
 import (
 	"testing"
 
-	"github.com/scrouthtv/go-pdf/body"
 	"github.com/scrouthtv/go-pdf/object"
 )
 
@@ -28,7 +27,22 @@ endstreamendobj
 
 // TODO comments
 
-func TestStreamEx(t *testing.T) {
+func TestStreamBlind(t *testing.T) {
+	in := `stream
+asdf qwertz
+endstream`
+
+	pdf := NewPdf(in)
+
+	is, err := object.ReadStream(pdf, object.NewDict())
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log(is)
+}
+
+/*func TestStreamEx(t *testing.T) {
 	is := `[8 0 obj
 	77
 endobj
@@ -51,4 +65,4 @@ endobj
 	}
 
 	println(i.String())
-}
+}*/

@@ -1,6 +1,13 @@
 package object_test
 
-var test_dict = `<</Type /Example
+import (
+	"testing"
+
+	"github.com/scrouthtv/go-pdf/object"
+)
+
+func TestBasicDict(t *testing.T) {
+	in := `<</Type /Example
 	/Subtype /DictionaryExample
 	/Version 0.01
 	/IntegerItem 12
@@ -12,3 +19,13 @@ var test_dict = `<</Type /Example
 		/VeryLastItem (OK)
 	>>
 >>`
+
+	pdf := NewPdf(in)
+
+	d, err := object.ReadDict(pdf)
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log(d)
+}

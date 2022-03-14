@@ -52,9 +52,9 @@ func (b Bool) Write(w file.Writer) error {
 
 func (b Bool) String() string {
 	if b {
-		return "true"
+		return "bool(true)"
 	} else {
-		return "false"
+		return "bool(false)"
 	}
 }
 

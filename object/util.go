@@ -9,7 +9,7 @@ func readHexCharacter(r file.Reader) (rune, error) {
 
 func isTokenDelimiter(r rune) bool {
 	// Are there any other token delimiters??
-	return r == ' ' || r == '(' || r == ')' ||
+	return isWhitespace(r) || r == '(' || r == ')' ||
 		r == '<' || r == '>' || r == '[' || r == ']' ||
 		r == '/' || r == '%'
 }

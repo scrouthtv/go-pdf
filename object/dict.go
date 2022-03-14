@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/scrouthtv/go-pdf/file"
 )
@@ -30,6 +31,8 @@ func ReadDict(r file.Reader) (*Dict, error) {
 		return nil, &BadDictStartError{r.Position(), start}
 	}
 
+	DiscardWhitespace(r)
+
 	end, err := r.PeekString(2)
 	if err != nil {
 		return nil, err // TODO pack error
@@ -38,17 +41,23 @@ func ReadDict(r file.Reader) (*Dict, error) {
 	d := Dict{make(map[Name]Object)}
 
 	for end != ">>" {
+		DiscardWhitespace(r)
+
 		k, err := ReadName(r)
 		if err != nil {
 			return nil, err // TODO pack error
 		}
 
-		v, err := ReadObject(r)
+		DiscardWhitespace(r)
+
+		v, err := ReadArrayMember(r)
 		if err != nil {
 			return nil, err // TODO pack error
 		}
 
 		d.Dict[*k] = v
+
+		DiscardWhitespace(r)
 
 		end, err = r.PeekString(2)
 		if err != nil {
@@ -67,7 +76,38 @@ func (d *Dict) Write(w file.Writer) error {
 }
 
 func (d *Dict) String() string {
-	panic("not impl")
+	var out strings.Builder
+
+	out.WriteRune('{')
+
+	comma := false
+
+	for k, v := range d.Dict {
+		if comma {
+			out.WriteString(", ")
+		}
+
+		out.WriteRune('"')
+		out.WriteString(k.String())
+		out.WriteString("\": ")
+
+		_, issubdict := v.(*Dict)
+		if !issubdict {
+			out.WriteRune('"')
+		}
+
+		out.WriteString(v.String())
+
+		if !issubdict {
+			out.WriteRune('"')
+		}
+
+		comma = true
+	}
+
+	out.WriteRune('}')
+
+	return out.String()
 }
 
 type BadDictStartError struct {

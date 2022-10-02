@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 
 	"go-pdf/pdfio"
@@ -84,7 +85,7 @@ func ReadStream(r pdfio.Reader, d *Dict) (*Stream, error) {
 // are ignored), the method returns an error.
 func readStreamWithLength(r pdfio.Reader, target *Stream, length int) (*Stream, error) {
 	println("read w length")
-	err := r.Advance(length)
+	_, err := r.Seek(int64(length), io.SeekCurrent)
 	if err != nil {
 		return nil, err
 	}

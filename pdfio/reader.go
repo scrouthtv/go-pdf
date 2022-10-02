@@ -8,7 +8,7 @@ type Reader interface {
 	io.Reader
 	io.RuneReader
 	io.Seeker
-	Position() int
+	Position() int // TODO this limits the position to 2.1 GB
 
 	// ReadString should read a string with len bytes.
 	// The specified length is the amount of bytes, *not*
@@ -20,8 +20,6 @@ type Reader interface {
 	Peek([]byte) (int, error)
 	PeekRune() (r rune, err error)
 	PeekString(length int) (string, error)
-
-	Advance(amount int) error
 }
 
 // ReadComment attempts to read a comment from the pdf.
@@ -63,18 +61,20 @@ func ReadComment(r Reader) (bool, string, error) {
 }
 
 func ReadPreviousLine(r Reader) (string, error) {
-	unreadToEOL(r)
+	UnreadToEOL(r)
 	end := r.Position()
 
-	unreadToEOL(r)
+	UnreadToEOL(r)
 	DiscardEOL(r)
 	start := r.Position()
+
+	println("line from ", start, "to", end)
 
 	s, err := r.ReadString(end - start)
 	return s, err
 }
 
-func unreadToEOL(r Reader) error {
+func UnreadToEOL(r Reader) error {
 	var buf []byte = make([]byte, 1)
 
 	for {

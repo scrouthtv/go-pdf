@@ -1,12 +1,12 @@
-package object_test
+package testutil
 
 import (
 	"io"
 	"strings"
 	"testing"
 
-	"go-pdf/pdfio"
 	"go-pdf/object"
+	"go-pdf/pdfio"
 )
 
 type StringPDF struct {
@@ -19,6 +19,20 @@ func NewPdf(s string) *StringPDF {
 
 func (s *StringPDF) Position() int {
 	return int(s.Size()) - s.Len()
+}
+
+func (s *StringPDF) Peek(buf []byte) (int, error) {
+	n, err := s.Read(buf)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = s.Seek(-int64(n), io.SeekCurrent)
+	if err != nil {
+		return 0, err
+	}
+
+	return n, err
 }
 
 func (s *StringPDF) PeekRune() (rune, error) {

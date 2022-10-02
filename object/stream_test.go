@@ -5,6 +5,7 @@ import (
 
 	"go-pdf/body"
 	"go-pdf/object"
+	"go-pdf/testutil"
 )
 
 func TestStream(t *testing.T) {
@@ -15,7 +16,7 @@ func TestStream(t *testing.T) {
 Lorem ipsum
 endstreamendobj
 	`
-	pdf := NewPdf(is)
+	pdf := testutil.NewPdf(is)
 	i, err := object.ReadIndirect(pdf, nil)
 	if err != nil {
 		t.Error(err)
@@ -33,7 +34,7 @@ func TestStreamBlind(t *testing.T) {
 asdf qwertz
 endstream`
 
-	pdf := NewPdf(in)
+	pdf := testutil.NewPdf(in)
 
 	is, err := object.ReadStream(pdf, object.NewDict())
 	if err != nil {
@@ -57,7 +58,7 @@ stream
 endstream
 endobj
 `
-	pdf := NewPdf(in)
+	pdf := testutil.NewPdf(in)
 	b := body.NewBody()
 
 	is, err := object.ReadIndirect(pdf, b)

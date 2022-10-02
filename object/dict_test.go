@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"go-pdf/object"
+	"go-pdf/testutil"
 )
 
 func TestBasicDict(t *testing.T) {
@@ -20,7 +21,7 @@ func TestBasicDict(t *testing.T) {
 	>>
 >>`
 
-	pdf := NewPdf(in)
+	pdf := testutil.NewPdf(in)
 
 	d, err := object.ReadDict(pdf, nil)
 	if err != nil {

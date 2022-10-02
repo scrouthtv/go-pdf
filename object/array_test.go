@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"go-pdf/object"
+	"go-pdf/testutil"
 )
 
 func TestArray(t *testing.T) {
 	in := "[549 3.14 false (Ralph) /SomeName]"
-	rdr := NewPdf(in)
+	rdr := testutil.NewPdf(in)
 
 	is, err := object.ReadArray(rdr, nil)
 	if err != nil {
@@ -72,7 +73,7 @@ func TestArrayWithIndirectObj(t *testing.T) {
 	in := `[12 1 22 obj
 	(cheap)
 	endobj 34]`
-	rdr := NewPdf(in)
+	rdr := testutil.NewPdf(in)
 
 	is, err := object.ReadArray(rdr, nil)
 	if err != nil {

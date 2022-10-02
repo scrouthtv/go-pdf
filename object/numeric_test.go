@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	"go-pdf/object"
+	"go-pdf/testutil"
 )
 
 func TestReadInteger(t *testing.T) {
 	s := "123 43445 +17 -98 0"
 	should := []int{123, 43445, 17, -98, 0}
-	pdf := NewPdf(s)
+	pdf := testutil.NewPdf(s)
 
 	for i := 0; i < len(should); i++ {
 		is, err := object.ReadInteger(pdf)

@@ -41,7 +41,7 @@ func ReadName(r pdfio.Reader) (*Name, error) {
 			}
 
 			out.Name += string(read)
-		} else if isTokenDelimiter(read) {
+		} else if pdfio.IsTokenDelimiter(read) {
 			// end is detected by an invalid character,
 			// so we have to unread the invalid character:
 			r.Seek(-1, io.SeekCurrent)

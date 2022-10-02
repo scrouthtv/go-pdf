@@ -44,7 +44,7 @@ func ReadArray(r pdfio.Reader, b shared.Body) (*Array, error) {
 
 		arr.Elems = append(arr.Elems, obj)
 
-		DiscardWhitespace(r)
+		pdfio.DiscardWhitespace(r)
 
 		id, err = r.PeekRune()
 		if err != nil {

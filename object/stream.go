@@ -15,7 +15,7 @@ type Stream struct {
 }
 
 func HasStream(r pdfio.Reader) bool {
-	DiscardWhitespace(r)
+	pdfio.DiscardWhitespace(r)
 
 	s, err := r.PeekString(6)
 	if err != nil {
@@ -35,7 +35,7 @@ func ReadStream(r pdfio.Reader, d *Dict) (*Stream, error) {
 		return nil, &BadStreamStartError{r.Position(), t}
 	}
 
-	err = DiscardEOL(r)
+	err = pdfio.DiscardEOL(r)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func readStreamWithLength(r pdfio.Reader, target *Stream, length int) (*Stream, 
 	}
 
 	target.BlobE = uint64(r.Position())
-	err = DiscardEOL(r)
+	err = pdfio.DiscardEOL(r)
 	if err != nil {
 		return nil, err
 	}
@@ -121,9 +121,9 @@ func readStreamBlind(r pdfio.Reader, target *Stream) (*Stream, error) {
 			return nil, err
 		}
 
-		if isEOL(read) {
+		if pdfio.IsEOL(read) {
 			target.BlobE = uint64(r.Position() - 1)
-			DiscardEOL(r) // discard additional LF
+			pdfio.DiscardEOL(r) // discard additional LF
 
 			reads, err := r.ReadString(9)
 			if err != nil {

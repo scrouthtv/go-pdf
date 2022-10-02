@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"go-pdf/object"
 	"go-pdf/pdfio"
 )
 
@@ -113,7 +112,7 @@ func TestDiscardWhitespace(t *testing.T) {
 func expectAfterSeek(t *testing.T, pdf pdfio.Reader, pos int) {
 	t.Helper()
 
-	err := object.DiscardWhitespace(pdf)
+	err := pdfio.DiscardWhitespace(pdf)
 	if err != nil {
 		t.Error(err)
 	}

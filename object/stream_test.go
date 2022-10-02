@@ -5,6 +5,7 @@ import (
 
 	"go-pdf/body"
 	"go-pdf/object"
+	"go-pdf/pdfio"
 	"go-pdf/testutil"
 )
 
@@ -67,7 +68,7 @@ endobj
 		t.FailNow()
 	}
 
-	object.DiscardWhitespace(pdf)
+	pdfio.DiscardWhitespace(pdf)
 	if pdf.Position() != 19 {
 		t.Errorf("Wrong position after first indirect, expected 19, got %d", pdf.Position())
 	}

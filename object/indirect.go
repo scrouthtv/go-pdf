@@ -86,14 +86,14 @@ func ReadIndirect(r pdfio.Reader, b shared.Body) (Indirect, error) {
 		return nil, err
 	}
 
-	DiscardWhitespace(r)
+	pdfio.DiscardWhitespace(r)
 
 	i.Gen, err = ReadInteger(r)
 	if err != nil {
 		return nil, err
 	}
 
-	DiscardWhitespace(r)
+	pdfio.DiscardWhitespace(r)
 
 	bR, err := r.PeekRune()
 	if err != nil {
@@ -116,7 +116,7 @@ func ReadIndirect(r pdfio.Reader, b shared.Body) (Indirect, error) {
 		return nil, &BadIndirectSpecifierError{r.Position(), "obj", rs}
 	}
 
-	DiscardWhitespace(r) // whitespace after obj
+	pdfio.DiscardWhitespace(r) // whitespace after obj
 
 	o := IndirectVal{ID: i}
 	// FIXME this can also be an indirect object
@@ -125,7 +125,7 @@ func ReadIndirect(r pdfio.Reader, b shared.Body) (Indirect, error) {
 		return nil, err
 	}
 
-	DiscardWhitespace(r) // whitespace after actual contents
+	pdfio.DiscardWhitespace(r) // whitespace after actual contents
 
 	rs, err = r.ReadString(6)
 	if err != nil {

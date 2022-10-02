@@ -38,7 +38,7 @@ func ReadDict(r pdfio.Reader, b shared.Body) (*Dict, error) {
 		return nil, &BadDictStartError{r.Position(), start}
 	}
 
-	DiscardWhitespace(r)
+	pdfio.DiscardWhitespace(r)
 
 	end, err := r.PeekString(2)
 	if err != nil {
@@ -48,14 +48,14 @@ func ReadDict(r pdfio.Reader, b shared.Body) (*Dict, error) {
 	d := Dict{make(map[string]shared.Object)}
 
 	for end != ">>" {
-		DiscardWhitespace(r)
+		pdfio.DiscardWhitespace(r)
 
 		k, err := ReadName(r)
 		if err != nil {
 			return nil, err // TODO pack error
 		}
 
-		DiscardWhitespace(r)
+		pdfio.DiscardWhitespace(r)
 
 		v, err := ReadArrayMember(r, b)
 		if err != nil {
@@ -64,7 +64,7 @@ func ReadDict(r pdfio.Reader, b shared.Body) (*Dict, error) {
 
 		d.Dict[k.Name] = v
 
-		DiscardWhitespace(r)
+		pdfio.DiscardWhitespace(r)
 
 		end, err = r.PeekString(2)
 		if err != nil {

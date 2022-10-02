@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/scrouthtv/go-pdf/file"
-	"github.com/scrouthtv/go-pdf/object"
+	"go-pdf/pdfio"
+	"go-pdf/object"
 )
 
 type StringPDF struct {
@@ -96,7 +96,7 @@ func TestDiscardWhitespace(t *testing.T) {
 	expectAfterSeek(t, pdf, 11)
 }
 
-func expectAfterSeek(t *testing.T, pdf file.Reader, pos int) {
+func expectAfterSeek(t *testing.T, pdf pdfio.Reader, pos int) {
 	t.Helper()
 
 	err := object.DiscardWhitespace(pdf)
@@ -109,7 +109,7 @@ func expectAfterSeek(t *testing.T, pdf file.Reader, pos int) {
 	}
 }
 
-func discardRune(t *testing.T, pdf file.Reader) {
+func discardRune(t *testing.T, pdf pdfio.Reader) {
 	t.Helper()
 
 	_, _, err := pdf.ReadRune()

@@ -3,7 +3,7 @@ package object_test
 import (
 	"testing"
 
-	"github.com/scrouthtv/go-pdf/object"
+	"go-pdf/object"
 )
 
 func TestReadInteger(t *testing.T) {

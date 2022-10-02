@@ -3,12 +3,12 @@ package object
 import (
 	"fmt"
 
-	"github.com/scrouthtv/go-pdf/file"
-	"github.com/scrouthtv/go-pdf/shared"
+	"go-pdf/pdfio"
+	"go-pdf/shared"
 )
 
 // ReadDirectObject reads anything but an indirect object or a stream.
-func ReadDirectObject(r file.Reader, b shared.Body) (shared.Object, error) {
+func ReadDirectObject(r pdfio.Reader, b shared.Body) (shared.Object, error) {
 	r1, err := r.PeekRune()
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func ReadDirectObject(r file.Reader, b shared.Body) (shared.Object, error) {
 // streams.
 // These are (currently, as of PDF2.0) the same objects as are allowed as
 // dictionary value.
-func ReadArrayMember(r file.Reader, b shared.Body) (shared.Object, error) {
+func ReadArrayMember(r pdfio.Reader, b shared.Body) (shared.Object, error) {
 	r1, err := r.PeekRune()
 	if err != nil {
 		return nil, err

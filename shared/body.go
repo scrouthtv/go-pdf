@@ -3,7 +3,7 @@ package shared
 import (
 	"fmt"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
 type Body interface {
@@ -17,5 +17,5 @@ type ID interface {
 type Object interface {
 	fmt.Stringer
 
-	Write(file.Writer) error
+	Write(pdfio.Writer) error
 }

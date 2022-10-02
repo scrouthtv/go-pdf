@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
 // Stream is a (virtually unlimited) sequence of bytes.
@@ -14,7 +14,7 @@ type Stream struct {
 	Dict  *Dict
 }
 
-func HasStream(r file.Reader) bool {
+func HasStream(r pdfio.Reader) bool {
 	DiscardWhitespace(r)
 
 	s, err := r.PeekString(6)
@@ -25,7 +25,7 @@ func HasStream(r file.Reader) bool {
 	return s == "stream"
 }
 
-func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
+func ReadStream(r pdfio.Reader, d *Dict) (*Stream, error) {
 	t, err := r.ReadString(6)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func ReadStream(r file.Reader, d *Dict) (*Stream, error) {
 // End tokens inside the stream are not checked.
 // If the stream does not end with "endstream" (EOL markers
 // are ignored), the method returns an error.
-func readStreamWithLength(r file.Reader, target *Stream, length int) (*Stream, error) {
+func readStreamWithLength(r pdfio.Reader, target *Stream, length int) (*Stream, error) {
 	println("read w length")
 	err := r.Advance(length)
 	if err != nil {
@@ -114,7 +114,7 @@ func readStreamWithLength(r file.Reader, target *Stream, length int) (*Stream, e
 // The end position is determined by searching for an EOL marker,
 // that is followed by "endstream".
 // The end position is set to the position of that EOL marker.
-func readStreamBlind(r file.Reader, target *Stream) (*Stream, error) {
+func readStreamBlind(r pdfio.Reader, target *Stream) (*Stream, error) {
 	for {
 		read, _, err := r.ReadRune()
 		if err != nil {
@@ -141,7 +141,7 @@ func (s *Stream) String() string {
 	return "Stream(" + strconv.FormatUint(s.BlobS, 10) + "-" + strconv.FormatUint(s.BlobE, 10) + ")"
 }
 
-func (s *Stream) Write(r file.Writer) error {
+func (s *Stream) Write(r pdfio.Writer) error {
 	panic("NOT IMPLEMENTED!") //TODO
 }
 

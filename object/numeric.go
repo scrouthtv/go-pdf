@@ -4,8 +4,8 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/scrouthtv/go-pdf/file"
-	"github.com/scrouthtv/go-pdf/shared"
+	"go-pdf/pdfio"
+	"go-pdf/shared"
 )
 
 // Numeric may either be an Integer or a Floating number.
@@ -14,7 +14,7 @@ type Numeric interface {
 }
 
 // ReadNumeric may read either an Integer or a Real.
-func ReadNumeric(r file.Reader) (Numeric, error) {
+func ReadNumeric(r pdfio.Reader) (Numeric, error) {
 	a := ""
 
 	read, _, err := r.ReadRune()
@@ -65,7 +65,7 @@ func NewIntegerFromString(s string) (Integer, error) {
 	return Integer(i), nil
 }
 
-func ReadInteger(r file.Reader) (Integer, error) {
+func ReadInteger(r pdfio.Reader) (Integer, error) {
 	a := ""
 
 	read, _, err := r.ReadRune()
@@ -89,7 +89,7 @@ func ReadInteger(r file.Reader) (Integer, error) {
 	return NewIntegerFromString(a)
 }
 
-func (i Integer) Write(w file.Writer) error {
+func (i Integer) Write(w pdfio.Writer) error {
 	_, err := w.WriteString(strconv.Itoa(int(i)))
 	return err
 }
@@ -115,7 +115,7 @@ func NewFloatFromString(s string) (Floating, error) {
 	return Floating(f), nil
 }
 
-func (f Floating) Write(w file.Writer) error {
+func (f Floating) Write(w pdfio.Writer) error {
 	_, err := w.WriteString(strconv.FormatFloat(float64(f), 'f', -1, 64))
 	return err
 }

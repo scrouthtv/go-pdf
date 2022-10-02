@@ -1,8 +1,8 @@
 package body
 
 import (
-	"github.com/scrouthtv/go-pdf/object"
-	"github.com/scrouthtv/go-pdf/shared"
+	"go-pdf/object"
+	"go-pdf/shared"
 )
 
 type Body struct {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
 type String struct {
@@ -12,7 +12,7 @@ type String struct {
 	isHex bool
 }
 
-func ReadString(r file.Reader) (*String, error) {
+func ReadString(r pdfio.Reader) (*String, error) {
 	id, _, err := r.ReadRune()
 	if err != nil {
 		return nil, err // TODO pack error
@@ -28,7 +28,7 @@ func ReadString(r file.Reader) (*String, error) {
 	}
 }
 
-func readLiteralString(r file.Reader) (*String, error) {
+func readLiteralString(r pdfio.Reader) (*String, error) {
 	parens := 0
 	out := String{"", false}
 
@@ -97,7 +97,7 @@ func readLiteralString(r file.Reader) (*String, error) {
 	}
 }
 
-func readOctal(r file.Reader, pre rune) (rune, error) { // TODO The number ddd may consist of one, two, or three octal digits
+func readOctal(r pdfio.Reader, pre rune) (rune, error) { // TODO The number ddd may consist of one, two, or three octal digits
 	s, err := r.ReadString(2)
 	if err != nil {
 		return -1, err // TODO pack error
@@ -111,7 +111,7 @@ func readOctal(r file.Reader, pre rune) (rune, error) { // TODO The number ddd m
 // readHexString reads a string of consecutive two-digit integers
 // and parses them as hexadecimal numbers.
 // It ends when reaching a '>'.
-func readHexString(r file.Reader) (*String, error) {
+func readHexString(r pdfio.Reader) (*String, error) {
 	out := String{"", false}
 
 	for {
@@ -132,7 +132,7 @@ func readHexString(r file.Reader) (*String, error) {
 	return &out, nil
 }
 
-func (s *String) Write(w file.Writer) error {
+func (s *String) Write(w pdfio.Writer) error {
 	if s.isHex {
 		panic("not impl")
 	} else {

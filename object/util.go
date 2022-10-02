@@ -3,10 +3,10 @@ package object
 import (
 	"strconv"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
-func readHexCharacter(r file.Reader) (rune, error) {
+func readHexCharacter(r pdfio.Reader) (rune, error) {
 	l, err := r.ReadString(2)
 	if err != nil {
 		return rune(0), err
@@ -18,7 +18,7 @@ func readHexCharacter(r file.Reader) (rune, error) {
 	return rune(c), err
 }
 
-func DiscardEOL(r file.Reader) error {
+func DiscardEOL(r pdfio.Reader) error {
 
 	p, err := r.PeekRune()
 	if err != nil {
@@ -76,7 +76,7 @@ func isWhitespace(r rune) bool {
 		r == '\r' || r == '\n' || r == 12
 }
 
-func DiscardWhitespace(r file.Reader) error {
+func DiscardWhitespace(r pdfio.Reader) error {
 	read, err := r.PeekRune()
 	if err != nil {
 		return err

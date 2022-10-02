@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/scrouthtv/go-pdf/file"
-	"github.com/scrouthtv/go-pdf/shared"
+	"go-pdf/pdfio"
+	"go-pdf/shared"
 )
 
 type ObjID struct {
@@ -44,7 +44,7 @@ type IndirectRef struct {
 
 // HasIndirect checks whether the next token is an indirect object.
 // If an error occurs during reading, false is returned.
-func HasIndirect(r file.Reader) bool {
+func HasIndirect(r pdfio.Reader) bool {
 	defer r.Seek(int64(r.Position()), io.SeekStart)
 
 	spc := 0
@@ -77,7 +77,7 @@ func HasIndirect(r file.Reader) bool {
 	return s == "obj"
 }
 
-func ReadIndirect(r file.Reader, b shared.Body) (Indirect, error) {
+func ReadIndirect(r pdfio.Reader, b shared.Body) (Indirect, error) {
 	i := ObjID{}
 	var err error
 
@@ -139,7 +139,7 @@ func ReadIndirect(r file.Reader, b shared.Body) (Indirect, error) {
 	return &o, nil
 }
 
-func (i *IndirectVal) Write(w file.Writer) error {
+func (i *IndirectVal) Write(w pdfio.Writer) error {
 	err := i.ID.ID.Write(w)
 	if err != nil {
 		return err
@@ -177,7 +177,7 @@ func (i *IndirectVal) String() string {
 func (i *IndirectVal) Value() shared.Object {
 	return i.value
 }
-func (i *IndirectRef) Write(w file.Writer) error {
+func (i *IndirectRef) Write(w pdfio.Writer) error {
 	err := i.ID.ID.Write(w)
 	if err != nil {
 		return err

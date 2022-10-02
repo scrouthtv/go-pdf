@@ -1,3 +1,3 @@
-module github.com/scrouthtv/go-pdf
+module go-pdf
 
 go 1.17

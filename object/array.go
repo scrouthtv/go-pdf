@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/scrouthtv/go-pdf/file"
-	"github.com/scrouthtv/go-pdf/shared"
+	"go-pdf/pdfio"
+	"go-pdf/shared"
 )
 
 // Array is a collection of objects.
@@ -17,7 +17,7 @@ type Array struct {
 
 var BadArray = &Array{}
 
-func ReadArray(r file.Reader, b shared.Body) (*Array, error) {
+func ReadArray(r pdfio.Reader, b shared.Body) (*Array, error) {
 	id, _, err := r.ReadRune()
 	if err != nil {
 		return nil, &MissingArrayTokenError{r.Position(), err}
@@ -58,7 +58,7 @@ func ReadArray(r file.Reader, b shared.Body) (*Array, error) {
 	return &arr, nil
 }
 
-func (a *Array) Write(w file.Writer) error {
+func (a *Array) Write(w pdfio.Writer) error {
 	err := w.WriteRune('[')
 	if err != nil {
 		return err

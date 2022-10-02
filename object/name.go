@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
 // Name is an (internal) name object.
@@ -16,7 +16,7 @@ type Name struct {
 	Name string
 }
 
-func ReadName(r file.Reader) (*Name, error) {
+func ReadName(r pdfio.Reader) (*Name, error) {
 	read, _, err := r.ReadRune()
 	if err != nil {
 		return nil, err // TODO pack error
@@ -52,7 +52,7 @@ func ReadName(r file.Reader) (*Name, error) {
 	}
 }
 
-func (n *Name) Write(w file.Writer) error {
+func (n *Name) Write(w pdfio.Writer) error {
 	err := w.WriteRune('/')
 	if err != nil {
 		return err

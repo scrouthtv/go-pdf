@@ -1,7 +1,7 @@
 package file
 
 import (
-	"github.com/scrouthtv/go-pdf/header"
+	"go-pdf/header"
 )
 
 type File struct {

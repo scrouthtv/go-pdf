@@ -3,8 +3,8 @@ package object_test
 import (
 	"testing"
 
-	"github.com/scrouthtv/go-pdf/body"
-	"github.com/scrouthtv/go-pdf/object"
+	"go-pdf/body"
+	"go-pdf/object"
 )
 
 func TestStream(t *testing.T) {

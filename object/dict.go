@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/scrouthtv/go-pdf/file"
-	"github.com/scrouthtv/go-pdf/shared"
+	"go-pdf/pdfio"
+	"go-pdf/shared"
 )
 
 // Dict represents a pdf dictionary.
@@ -23,7 +23,7 @@ func NewDict() *Dict {
 	}
 }
 
-func ReadDict(r file.Reader, b shared.Body) (*Dict, error) {
+func ReadDict(r pdfio.Reader, b shared.Body) (*Dict, error) {
 	// Dictionary entry with value null shall be ignored.
 	// Keys are unique, as names are unique.
 	// A dict may contain 0 entries.
@@ -82,7 +82,7 @@ func ReadDict(r file.Reader, b shared.Body) (*Dict, error) {
 	return &d, nil
 }
 
-func (d *Dict) Write(w file.Writer) error {
+func (d *Dict) Write(w pdfio.Writer) error {
 	panic("not impl")
 }
 

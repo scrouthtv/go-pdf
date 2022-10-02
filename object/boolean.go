@@ -3,14 +3,14 @@ package object
 import (
 	"fmt"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
 type Bool bool
 
 var BadBool = Bool(false)
 
-func ReadBool(r file.Reader) (Bool, error) {
+func ReadBool(r pdfio.Reader) (Bool, error) {
 	a, err := r.ReadString(4)
 	if err != nil {
 		return BadBool, err // TODO pack error
@@ -37,7 +37,7 @@ func ReadBool(r file.Reader) (Bool, error) {
 	// don't need to unread anything
 }
 
-func (b Bool) Write(w file.Writer) error {
+func (b Bool) Write(w pdfio.Writer) error {
 	var err error
 
 	switch b {

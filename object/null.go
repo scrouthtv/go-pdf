@@ -3,14 +3,14 @@ package object
 import (
 	"fmt"
 
-	"github.com/scrouthtv/go-pdf/file"
+	"go-pdf/pdfio"
 )
 
 type Null struct{}
 
 var TheNull = Null{}
 
-func ReadNull(r file.Reader) (Null, error) {
+func ReadNull(r pdfio.Reader) (Null, error) {
 	a, err := r.ReadString(4)
 	if err != nil {
 		return TheNull, err // TODO pack error
@@ -25,7 +25,7 @@ func ReadNull(r file.Reader) (Null, error) {
 	// no need to unread anything
 }
 
-func (n Null) Write(w file.Writer) error {
+func (n Null) Write(w pdfio.Writer) error {
 	_, err := w.WriteString("null")
 	return err
 }

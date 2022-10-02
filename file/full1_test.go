@@ -15,7 +15,7 @@ func TestFile(t *testing.T) {
 
 	r := pdfio.NewReader(f)
 
-	pos, err := lastXref(r)
+	pos, err := prevXref(r)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

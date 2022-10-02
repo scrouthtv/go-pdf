@@ -60,6 +60,29 @@ func ReadComment(r Reader) (bool, string, error) {
 	return true, cmt, nil
 }
 
+// ReadToEOL reads up to and including the next EOL
+// and returns the string without the EOL marker.
+func ReadToEOL(r Reader) (string, error) {
+	var out string
+	buf := make([]byte, 1)
+
+	for {
+		_, err := r.Read(buf)
+		if err != nil {
+			return "", err
+		}
+
+		if IsEOL(rune(buf[0])) { // FIXME check for CRLF
+			return out, nil
+		} else {
+			out = out + string(buf)
+		}
+	}
+}
+
+// ReadPreviousLine reads the previous line and returns it without
+// preceeding or trailing EOL markers.
+// After the call, the file is positioned after the EOL of the line.
 func ReadPreviousLine(r Reader) (string, error) {
 	UnreadToEOL(r)
 	end := r.Position()
@@ -71,6 +94,11 @@ func ReadPreviousLine(r Reader) (string, error) {
 	println("line from ", start, "to", end)
 
 	s, err := r.ReadString(end - start)
+	if err != nil {
+		return s, err
+	}
+
+	err = DiscardEOL(r)
 	return s, err
 }
 

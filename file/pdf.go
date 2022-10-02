@@ -5,7 +5,6 @@ import (
 	"go-pdf/header"
 	"go-pdf/pdfio"
 	"io"
-	"strconv"
 )
 
 type File struct {
@@ -29,6 +28,15 @@ func ReadFile(r pdfio.Reader) (*File, error) {
 
 	f.hdr = *h
 
+	// Read last xref table:
+	moveToEnd(r)
+	pos, err := prevXref(r)
+	if err != nil {
+		return nil, err
+	}
+
+	s, err := readSection(r, pos)
+
 	return &f, nil
 }
 
@@ -37,8 +45,7 @@ func readSection(r pdfio.Reader, xrefpos int) (*Section, error) {
 	return nil, nil
 }
 
-// lastXref looks up the position of the last cross-reference table.
-func lastXref(r pdfio.Reader) (int, error) {
+func moveToEnd(r pdfio.Reader) error {
 	r.Seek(0, io.SeekEnd)
 	println(r.Position())
 	pdfio.UnreadToEOL(r) // TODO: is there *always* an EOL after the EOF marker????
@@ -48,18 +55,20 @@ func lastXref(r pdfio.Reader) (int, error) {
 	r.Seek(-5, io.SeekCurrent)
 	s, err := r.ReadString(5)
 	if err != nil {
-		return -1, err
+		return err
 	}
 
 	if s != "%%EOF" {
-		return -1, &ErrBadEOF{s}
+		return &ErrBadEOF{s}
 	}
 
-	xrefpos, err := pdfio.ReadPreviousLine(r)
-	if err != nil {
-		return -1, err
-	}
+	return nil
+}
 
+// prevXref looks up the position of the previous cross-reference table.
+// This is done by reversing line-by-line over the file until "startxref"
+// is found. The following line is returned.
+func prevXref(r pdfio.Reader) (int, error) {
 	label, err := pdfio.ReadPreviousLine(r)
 	if err != nil {
 		return -1, err
@@ -69,12 +78,7 @@ func lastXref(r pdfio.Reader) (int, error) {
 		return -1, &ErrBadTrailer{label}
 	}
 
-	pos, err := strconv.Atoi(xrefpos)
-	if err != nil {
-		return -1, err
-	}
-
-	return pos, nil
+	pdfio.ReadLine
 }
 
 type ErrBadEOF struct {
